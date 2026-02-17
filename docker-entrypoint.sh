@@ -11,9 +11,6 @@ fi
 
 echo "✅ DATABASE_URL is configured"
 
-# Exportar variável para garantir que está disponível
-export DATABASE_URL="$DATABASE_URL"
-
 # Executar migrations
 echo "📦 Running Prisma migrations..."
 npx prisma migrate deploy
