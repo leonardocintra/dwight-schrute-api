@@ -37,8 +37,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 
-# Copiar Prisma schema e gerar client
+# Copiar Prisma config e schema para gerar client
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 RUN npx prisma generate
 
 # Copiar build da aplicação
