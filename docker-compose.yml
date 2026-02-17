@@ -1,0 +1,62 @@
+# Docker Compose para desenvolvimento local
+version: '3.8'
+
+services:
+  # Banco de dados PostgreSQL
+  postgres:
+    image: postgres:17-alpine
+    container_name: dwight-api-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: dwight
+      POSTGRES_PASSWORD: schrute_farms
+      POSTGRES_DB: dwight_api
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dwight-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U dwight -d dwight_api']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplicação NestJS
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: dwight-api-app
+    restart: unless-stopped
+    ports:
+      - '3005:3005'
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://dwight:schrute_farms@postgres:5432/dwight_api
+      PORT: 3005
+      # JWT secrets (exemplo - altere em produção)
+      JWT_SECRET: dwight_schrute_secret_key_dev
+      JWT_EXPIRES_IN: 7d
+      # Outras variáveis conforme necessário
+      API_VERSION: v1
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    networks:
+      - dwight-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate dev && npm run start:dev"
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  dwight-network:
+    driver: bridge
