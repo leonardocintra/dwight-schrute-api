@@ -4,6 +4,9 @@
 # Stage 1: Build
 FROM node:22-alpine AS builder
 
+# Atualizar npm para a versão mais recente
+RUN npm install -g npm@latest
+
 WORKDIR /app
 
 # Copiar arquivos de dependências
@@ -24,6 +27,9 @@ RUN npm run build
 
 # Stage 2: Production
 FROM node:22-alpine AS production
+
+# Atualizar npm para a versão mais recente
+RUN npm install -g npm@latest
 
 WORKDIR /app
 
