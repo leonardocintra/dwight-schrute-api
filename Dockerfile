@@ -44,6 +44,10 @@ RUN npx prisma generate
 # Copiar build da aplicação
 COPY --from=builder /app/dist ./dist
 
+# Copiar script de entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Criar usuário não-root para segurança
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nestjs -u 1001 && \
@@ -55,7 +59,7 @@ USER nestjs
 EXPOSE 3005
 
 # Healthcheck
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+ENTRYPOINT ["docker-entrypoint.shretries=3 \
   CMD node -e "require('http').get('http://localhost:3005/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # Comando de inicialização
