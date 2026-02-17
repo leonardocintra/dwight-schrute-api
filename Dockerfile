@@ -50,8 +50,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Criar usuário não-root para segurança
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nestjs -u 1001 && \
-    chown -R nestjs:nodejs /app
+  adduser -S nestjs -u 1001 && \
+  chown -R nestjs:nodejs /app
 
 USER nestjs
 
@@ -59,8 +59,9 @@ USER nestjs
 EXPOSE 3005
 
 # Healthcheck
-ENTRYPOINT ["docker-entrypoint.shretries=3 \
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3005/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # Comando de inicialização
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
