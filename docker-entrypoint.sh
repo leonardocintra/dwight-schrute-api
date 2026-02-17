@@ -19,4 +19,4 @@ echo "✅ Migrations completed successfully"
 
 # Iniciar aplicação
 echo "🎯 Starting NestJS application..."
-exec node dist/main
+exec node dist/main.js
