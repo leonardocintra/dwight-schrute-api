@@ -17,6 +17,14 @@ npx prisma migrate deploy
 
 echo "✅ Migrations completed successfully"
 
+# Verificar se o arquivo existe
+if [ ! -f "dist/src/main.js" ]; then
+  echo "❌ ERROR: dist/src/main.js not found!"
+  echo "📁 Listing dist directory:"
+  ls -la dist/ || echo "dist/ directory does not exist"
+  exit 1
+fi
+
 # Iniciar aplicação
 echo "🎯 Starting NestJS application..."
-exec node dist/main.js
+exec node dist/src/main.js.js
